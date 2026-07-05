@@ -2,9 +2,10 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
-  const isProd = argv.mode === 'production';
+  const mode = argv.mode || 'production';
+  const isProd = mode === 'production';
 
-  return {
+  return { mode,
     entry: './src/renderer/index.jsx',
     output: {
       path: path.resolve(__dirname, 'dist/renderer'),
