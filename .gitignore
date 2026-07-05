@@ -7,3 +7,7 @@ dist/
 *.db-shm
 .DS_Store
 Thumbs.db
+release/*.exe
+release/win-unpacked/
+release/builder-debug.yml
+logs/
