@@ -47,6 +47,7 @@ const navSections = [
       { path: '/all-bills', icon: '📄', label: 'All Bills', badge: null },
       { path: '/reports', icon: '📈', label: 'Reports', badge: null },
       { path: '/barcode-designer', icon: '🏷️', label: 'Barcode Designer', badge: null },
+      { path: '/paper-setup', icon: '📐', label: 'Paper Setup', badge: 'NEW' },
       { path: '/ai-assistant', icon: '🤖', label: 'AI Assistant', badge: null },
       { path: '/data-import', icon: '📥', label: 'Data Import', badge: null },
       { path: '/sync', icon: '🔄', label: 'Sync', badge: null },

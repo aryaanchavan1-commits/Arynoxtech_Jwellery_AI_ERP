@@ -362,6 +362,24 @@ function initSchema() {
     `ALTER TABLE transactions ADD COLUMN hsn_code TEXT`,
     `ALTER TABLE items ADD COLUMN hsn_code TEXT`,
     `ALTER TABLE items ADD COLUMN gst_rate REAL DEFAULT 0`,
+    `ALTER TABLE sale_invoice_items ADD COLUMN qty REAL DEFAULT 0`,
+  ];
+
+  const extraTables = [
+    `CREATE TABLE IF NOT EXISTS paper_profiles (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL DEFAULT 'barcode',
+      width REAL NOT NULL,
+      height REAL NOT NULL,
+      margin_top REAL DEFAULT 0,
+      margin_right REAL DEFAULT 0,
+      margin_bottom REAL DEFAULT 0,
+      margin_left REAL DEFAULT 0,
+      dpi REAL DEFAULT 300,
+      is_default INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`,
   ];
 
   for (const sql of migrations) {
@@ -374,6 +392,10 @@ function initSchema() {
     } catch (err) {
       console.error('Schema init error:', err.message);
     }
+  }
+
+  for (const sql of extraTables) {
+    try { db.run(sql); } catch (err) { console.error('Schema extra table error:', err.message); }
   }
 
   console.log('Database schema initialized successfully');

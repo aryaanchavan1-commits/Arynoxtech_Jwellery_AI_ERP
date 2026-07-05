@@ -205,13 +205,6 @@ const STYLES = {
   },
 };
 
-const MODULES = [
-  'Dashboard', 'Masters', 'Sales', 'Purchase', 'Karagir', 'Stock',
-  'Accounting', 'Gold Rates', 'Gold Scheme', 'HR', 'Reports',
-  'AI Assistant', 'Settings', 'GST', 'Girvi', 'Jobs', 'Quotations',
-  'CRM', 'Alerts', 'Permissions',
-];
-
 function formatDate(d) {
   if (!d) return '—';
   try {

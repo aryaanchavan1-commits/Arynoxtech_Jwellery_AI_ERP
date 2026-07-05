@@ -29,6 +29,7 @@ import PermissionsModule from './components/Permissions/PermissionsModule';
 import ImportWizard from './components/Import/ImportWizard';
 import HelpModule from './components/Help/HelpModule';
 import SyncPanel from './components/Sync/SyncPanel';
+import PaperSetup from './components/Settings/PaperSetup';
 import './styles.css';
 
 function ProtectedRoute({ children }) {
@@ -70,6 +71,7 @@ export default function App() {
               <Route path="sync" element={<SyncPanel />} />
               <Route path="help" element={<HelpModule />} />
               <Route path="settings/*" element={<SettingsPage />} />
+              <Route path="paper-setup" element={<PaperSetup />} />
             </Route>
           </Routes>
         </Router>
