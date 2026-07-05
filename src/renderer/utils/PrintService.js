@@ -78,16 +78,19 @@ export const PrintService = {
     const itemsHtml = items.map(item => {
       const svg = item.barcodeSvg || '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="30"><rect width="100" height="30" fill="white"/><text x="10" y="20" font-size="10" fill="black">' + (item.barcode || item.code || 'N/A') + '</text></svg>';
       if (isSmall) {
+        const fs = Math.max(4, Math.min(6, settings.nameSize || 5));
         return `
-      <div class="sticker" style="width:${stickerWidth}mm;height:${stickerHeight}mm;flex-direction:row;gap:2px;padding:0 1mm;">
-        <div style="flex:1;overflow:hidden;">
-          <div class="barcode-wrap" style="height:${Math.max(6, stickerHeight - 2)}mm;display:flex;align-items:center;">
+      <div class="sticker" style="width:${stickerWidth}mm;height:${stickerHeight}mm;flex-direction:row;gap:1px;padding:0 1mm;">
+        <div style="flex:1;overflow:hidden;min-width:0;">
+          <div class="barcode-wrap" style="height:${Math.max(6, stickerHeight - 1)}mm;display:flex;align-items:center;">
             ${svg}
           </div>
         </div>
-        <div style="text-align:right;white-space:nowrap;">
-          <div class="item-name" style="font-size:${Math.max(5, settings.nameSize || 5)}px;">₹${formatNum(item.selling_price || 0)}</div>
-          <div class="barcode-text">${item.barcode || item.code || ''}</div>
+        <div style="text-align:right;white-space:nowrap;flex-shrink:0;max-width:45%;">
+          <div class="item-name" style="font-size:${fs}px;line-height:1.1;overflow:hidden;text-overflow:ellipsis;">${item.name || ''}</div>
+          <div style="font-size:${Math.max(4, fs - 1)}px;">${(item.weight || 0).toFixed(3)}g</div>
+          <div class="item-name" style="font-size:${fs}px;">₹${formatNum(item.selling_price || 0)}</div>
+          <div class="barcode-text" style="font-size:${Math.max(3, fs - 2)}px;">${item.barcode || item.code || ''}</div>
         </div>
       </div>`;
       }
@@ -139,15 +142,19 @@ export const PrintService = {
   @page { margin: 0; size: ${sw}mm ${sh}mm; }
   body { margin: 0; padding: 0; font-family: Arial, sans-serif; width: ${sw}mm; height: ${sh}mm;
     display: flex; flex-direction: row; align-items: center; overflow: hidden; }
-  .barcode-wrap { flex: 1; height: 100%; display: flex; align-items: center; }
-  .info { text-align: right; padding-right: 1mm; white-space: nowrap; }
+  .barcode-wrap { flex: 1; height: 100%; display: flex; align-items: center; min-width:0; }
+  .info { text-align: right; padding-right: 1mm; white-space: nowrap; flex-shrink:0; }
+  .name { font-size: ${Math.max(5, settings.nameSize || 5)}px; font-weight: bold; }
+  .weight { font-size: ${Math.max(4, (settings.nameSize || 5) - 1)}px; }
   .price { font-size: ${Math.max(5, settings.nameSize || 5)}px; font-weight: bold; }
-  .code { font-size: 4px; color: #333; }
+  .code { font-size: ${Math.max(3, (settings.nameSize || 5) - 1)}px; color: #333; }
 </style></head><body>
   <div class="barcode-wrap">
     ${svg}
   </div>
   <div class="info">
+    <div class="name">${item.name || ''}</div>
+    <div class="weight">${(item.weight || 0).toFixed(3)}g</div>
     <div class="price">₹${formatNum(item.selling_price || 0)}</div>
     <div class="code">${item.barcode || item.code || ''}</div>
   </div>
