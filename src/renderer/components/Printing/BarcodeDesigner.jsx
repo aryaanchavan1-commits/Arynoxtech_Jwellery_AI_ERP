@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import { PrintService, DEFAULT_BARCODE_SETTINGS } from '../../utils/PrintService';
-import { generateBarcodeDataURL } from '../../utils/BarcodeGenerator';
+import { generateBarcodeSVG } from '../../utils/BarcodeGenerator';
 import PrintLayoutEditor from './PrintLayoutEditor';
 
 export default function BarcodeDesigner() {
@@ -89,7 +89,7 @@ export default function BarcodeDesigner() {
       const pageItems = selectedItems.slice(page * stickersPerPage, (page + 1) * stickersPerPage);
       const itemsWithBarcode = await Promise.all(pageItems.map(async item => ({
         ...item,
-        barcodeImg: await generateBarcodeDataURL(item.barcode || item.code || 'N/A')
+        barcodeSvg: generateBarcodeSVG(item.barcode || item.code || 'N/A')
       })));
       pagesHtml.push(PrintService.generateBarcodeHTML(itemsWithBarcode, { ...settings, columns: cols, rows: rows }));
     }
@@ -110,7 +110,7 @@ export default function BarcodeDesigner() {
       const pageItems = selectedItems.slice(page * stickersPerPage, (page + 1) * stickersPerPage);
       const itemsWithBarcode = await Promise.all(pageItems.map(async item => ({
         ...item,
-        barcodeImg: await generateBarcodeDataURL(item.barcode || item.code || 'N/A')
+        barcodeSvg: generateBarcodeSVG(item.barcode || item.code || 'N/A')
       })));
       pagesHtml.push(PrintService.generateBarcodeHTML(itemsWithBarcode, {
         ...settings, columns: cols, rows: rows,
@@ -143,8 +143,8 @@ export default function BarcodeDesigner() {
   };
 
   const printSingle = async (item) => {
-    const barcodeImg = await generateBarcodeDataURL(item.barcode || item.code || 'N/A');
-    const html = PrintService.generateBarcodeSingleHTML({ ...item, barcodeImg }, settings);
+    const barcodeSvg = generateBarcodeSVG(item.barcode || item.code || 'N/A');
+    const html = PrintService.generateBarcodeSingleHTML({ ...item, barcodeSvg }, settings);
     try {
       if (selectedPrinter) {
         await window.electronAPI.printer.printSilent(html, selectedPrinter, { landscape: false });

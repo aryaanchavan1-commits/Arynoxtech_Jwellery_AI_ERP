@@ -72,15 +72,17 @@ export const PrintService = {
     const stickerWidth = settings.stickerWidth || 66;
     const stickerHeight = settings.stickerHeight || 10;
     const cols = settings.columns || 1;
+    const rows = settings.rows || 8;
     const isSmall = stickerHeight <= 15;
 
     const itemsHtml = items.map(item => {
+      const svg = item.barcodeSvg || '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="30"><rect width="100" height="30" fill="white"/><text x="10" y="20" font-size="10" fill="black">' + (item.barcode || item.code || 'N/A') + '</text></svg>';
       if (isSmall) {
         return `
       <div class="sticker" style="width:${stickerWidth}mm;height:${stickerHeight}mm;flex-direction:row;gap:2px;padding:0 1mm;">
         <div style="flex:1;overflow:hidden;">
-          <div class="barcode-wrap" style="height:${Math.max(6, stickerHeight - 2)}mm;">
-            <img src="${item.barcodeImg || 'https://barcode.tec-it.com/barcode.ashx?data=' + (item.barcode || item.code || 'N/A') + '&code=Code128&dpi=96'}" style="height:100%;width:auto;" />
+          <div class="barcode-wrap" style="height:${Math.max(6, stickerHeight - 2)}mm;display:flex;align-items:center;">
+            ${svg}
           </div>
         </div>
         <div style="text-align:right;white-space:nowrap;">
@@ -96,8 +98,8 @@ export const PrintService = {
           <span>Wt: ${(item.weight || 0).toFixed(3)}g</span>
           <span>₹${formatNum(item.selling_price || 0)}</span>
         </div>
-        <div class="barcode-wrap">
-          <img src="${item.barcodeImg || 'https://barcode.tec-it.com/barcode.ashx?data=' + (item.barcode || item.code || 'N/A') + '&code=Code128&dpi=96'}" style="width:100%;height:${Math.max(8, stickerHeight * 0.3)}mm;" />
+        <div class="barcode-wrap" style="display:flex;justify-content:center;align-items:center;">
+          ${svg}
         </div>
         <div class="barcode-text">${item.barcode || item.code || ''}</div>
         ${settings.showQty ? '<div class="qty">Qty: ' + (item.qty || 1) + '</div>' : ''}
@@ -129,6 +131,7 @@ export const PrintService = {
     const sw = settings.stickerWidth || 66;
     const sh = settings.stickerHeight || 10;
     const isSmall = sh <= 15;
+    const svg = item.barcodeSvg || '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="30"><rect width="100" height="30" fill="white"/><text x="10" y="20" font-size="10" fill="black">' + (item.barcode || item.code || 'N/A') + '</text></svg>';
 
     if (isSmall) {
       return `<!DOCTYPE html><html><head>
@@ -137,13 +140,12 @@ export const PrintService = {
   body { margin: 0; padding: 0; font-family: Arial, sans-serif; width: ${sw}mm; height: ${sh}mm;
     display: flex; flex-direction: row; align-items: center; overflow: hidden; }
   .barcode-wrap { flex: 1; height: 100%; display: flex; align-items: center; }
-  .barcode-wrap img { height: 90%; max-width: 100%; }
   .info { text-align: right; padding-right: 1mm; white-space: nowrap; }
   .price { font-size: ${Math.max(5, settings.nameSize || 5)}px; font-weight: bold; }
   .code { font-size: 4px; color: #333; }
 </style></head><body>
   <div class="barcode-wrap">
-    <img src="${item.barcodeImg || 'https://barcode.tec-it.com/barcode.ashx?data=' + (item.barcode || item.code || 'N/A') + '&code=Code128&dpi=96'}" />
+    ${svg}
   </div>
   <div class="info">
     <div class="price">₹${formatNum(item.selling_price || 0)}</div>
@@ -159,13 +161,13 @@ export const PrintService = {
     display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
   .item-name { font-size: ${settings.nameSize || 8}px; font-weight: bold; }
   .item-details { font-size: ${settings.detailSize || 7}px; }
-  .barcode-wrap { width: 100%; margin: 1px 0; }
+  .barcode-wrap { width: 100%; margin: 1px 0; display: flex; justify-content: center; }
   .barcode-text { font-size: 6px; }
 </style></head><body>
   <div class="item-name">${item.name}</div>
   <div class="item-details">${(item.weight || 0).toFixed(3)}g | ₹${formatNum(item.selling_price || 0)}</div>
   <div class="barcode-wrap">
-    <img src="${item.barcodeImg || 'https://barcode.tec-it.com/barcode.ashx?data=' + (item.barcode || item.code || 'N/A') + '&code=Code128&dpi=96&imagetype=png'}" style="width:100%;height:${Math.max(8, sh * 0.35)}mm;" />
+    ${svg}
   </div>
   <div class="barcode-text">${item.barcode || item.code || ''}</div>
 </body></html>`;
