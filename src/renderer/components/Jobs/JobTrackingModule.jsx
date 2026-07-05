@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
+import Autocomplete from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 const JOB_TYPES = [
   'Casting', 'Setting', 'Polishing', 'Stone Setting',
@@ -164,14 +166,18 @@ function WorkOrdersDashboard() {
                   <td>{o.item_name || '-'}</td>
                   <td style={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.description || '-'}</td>
                   <td>
-                    <select className={`badge ${STATUS_STYLES[o.status] || 'badge-info'}`}
-                      value={o.status} onChange={e => updateStatus(o.id, e.target.value)}
-                      style={{ border: 'none', cursor: 'pointer', fontSize: 11, padding: '2px 8px', appearance: 'auto' }}>
-                      <option value="pending">Pending</option>
-                      <option value="in_progress">In Progress</option>
-                      <option value="completed">Completed</option>
-                      <option value="delivered">Delivered</option>
-                    </select>
+                    <Autocomplete
+                      options={[
+                        { value: 'pending', label: 'Pending' },
+                        { value: 'in_progress', label: 'In Progress' },
+                        { value: 'completed', label: 'Completed' },
+                        { value: 'delivered', label: 'Delivered' },
+                      ]}
+                      value={o.status}
+                      onChange={v => updateStatus(o.id, v)}
+                      placeholder="Status"
+                      style={{ minWidth: 120 }}
+                    />
                   </td>
                   <td><span className={`badge ${PRIORITY_STYLES[o.priority] || 'badge-info'}`}>{o.priority || 'normal'}</span></td>
                   <td>{o.assigned_name || '-'}</td>
@@ -298,10 +304,12 @@ function NewWorkOrder() {
             </div>
             <div className="form-group">
               <label className="form-label">Assigned To</label>
-              <select className="form-input" value={form.assigned_to} onChange={e => setForm({...form, assigned_to: e.target.value})}>
-                <option value="">Select Employee</option>
-                {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-              </select>
+            <Autocomplete
+              options={employees.map(e => ({value: e.id, label: e.name}))}
+              value={form.assigned_to}
+              onChange={v => setForm({...form, assigned_to: v})}
+              placeholder="Select Employee"
+            />
             </div>
             <div className="form-group">
               <label className="form-label">Due Date</label>
@@ -309,7 +317,7 @@ function NewWorkOrder() {
             </div>
             <div className="form-group">
               <label className="form-label">Charges (₹)</label>
-              <input type="number" className="form-input" value={form.charges || ''} onChange={e => { const v = e.target.value; setForm({...form, charges: v === '' ? '' : parseFloat(v) || 0}); }} />
+              <NumberInput value={form.charges || ''} onChange={v => setForm({...form, charges: v})} />
             </div>
           </div>
           <div className="card-footer">
@@ -507,23 +515,23 @@ function JobsDetail() {
                   <div className="form-row-4">
                     <div className="form-group">
                       <label className="form-label">Weight Issued (g)</label>
-                      <input type="number" step="0.001" className="form-input" value={form.weight_issued || ''} onChange={e => { const v = e.target.value; setForm({...form, weight_issued: v === '' ? '' : parseFloat(v) || 0}); }} />
+                      <NumberInput step="0.001" value={form.weight_issued || ''} onChange={v => setForm({...form, weight_issued: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Weight Returned (g)</label>
-                      <input type="number" step="0.001" className="form-input" value={form.weight_returned || ''} onChange={e => { const v = e.target.value; setForm({...form, weight_returned: v === '' ? '' : parseFloat(v) || 0}); }} />
+                      <NumberInput step="0.001" value={form.weight_returned || ''} onChange={v => setForm({...form, weight_returned: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Wastage (g)</label>
-                      <input type="number" step="0.001" className="form-input" value={form.wastage || ''} onChange={e => { const v = e.target.value; setForm({...form, wastage: v === '' ? '' : parseFloat(v) || 0}); }} />
+                      <NumberInput step="0.001" value={form.wastage || ''} onChange={v => setForm({...form, wastage: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Cost (₹)</label>
-                      <input type="number" className="form-input" value={form.cost || ''} onChange={e => { const v = e.target.value; setForm({...form, cost: v === '' ? '' : parseFloat(v) || 0}); }} />
+                      <NumberInput value={form.cost || ''} onChange={v => setForm({...form, cost: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Charges (₹)</label>
-                      <input type="number" className="form-input" value={form.charges || ''} onChange={e => { const v = e.target.value; setForm({...form, charges: v === '' ? '' : parseFloat(v) || 0}); }} />
+<NumberInput value={form.charges || ''} onChange={v => setForm({...form, charges: v})} />
                     </div>
                   </div>
                   <div className="form-group">
@@ -579,13 +587,17 @@ function JobsDetail() {
                       <td><span className="badge badge-gold">{j.job_type}</span></td>
                       <td style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{j.description || '-'}</td>
                       <td>
-                        <select className={`badge ${STATUS_STYLES[j.status] || 'badge-warning'}`}
-                          value={j.status} onChange={e => updateJobStatus(j.id, e.target.value)}
-                          style={{ border: 'none', cursor: 'pointer', fontSize: 11, padding: '2px 8px', appearance: 'auto' }}>
-                          <option value="pending">Pending</option>
-                          <option value="in_progress">In Progress</option>
-                          <option value="completed">Completed</option>
-                        </select>
+                        <Autocomplete
+                          options={[
+                            { value: 'pending', label: 'Pending' },
+                            { value: 'in_progress', label: 'In Progress' },
+                            { value: 'completed', label: 'Completed' },
+                          ]}
+                          value={j.status}
+                          onChange={v => updateJobStatus(j.id, v)}
+                          placeholder="Status"
+                          style={{ minWidth: 120 }}
+                        />
                       </td>
                       <td>{j.assigned_name || '-'}</td>
                       <td>{formatWeight(j.weight_issued)}</td>
@@ -625,10 +637,12 @@ function EmployeeSelect({ value, onChange, dbQuery }) {
     }
   }, [loaded]);
   return (
-    <select className="form-input" value={value} onChange={e => onChange(e.target.value)}>
-      <option value="">Select Employee</option>
-      {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-    </select>
+    <Autocomplete
+      options={employees.map(e => ({value: e.id, label: e.name}))}
+      value={value}
+      onChange={onChange}
+      placeholder="Select Employee"
+    />
   );
 }
 

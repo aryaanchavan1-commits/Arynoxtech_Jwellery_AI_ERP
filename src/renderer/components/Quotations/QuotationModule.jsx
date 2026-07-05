@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import Autocomplete, { PURITY_OPTIONS } from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 const QTN_STATUS_STYLES = {
   active: 'badge-info',
@@ -347,14 +348,16 @@ function NewQuotation() {
                 From parties list
               </label>
             </label>
-            {fromCustomerList ? (
-              <select className="form-input" value={form.customer_id} onChange={e => {
-                const c = customers.find(cust => cust.id === e.target.value);
-                setForm({...form, customer_id: e.target.value, customer_name: c?.name || '', customer_phone: c?.phone || ''});
-              }}>
-                <option value="">Select Customer</option>
-                {customers.map(c => <option key={c.id} value={c.id}>{c.name} {c.phone ? `(${c.phone})` : ''}</option>)}
-              </select>
+              {fromCustomerList ? (
+              <Autocomplete
+                options={customers.map(c => ({value: c.id, label: `${c.name}${c.phone ? ` (${c.phone})` : ''}`}))}
+                value={form.customer_id}
+                onChange={v => {
+                  const c = customers.find(cust => cust.id === v);
+                  setForm({...form, customer_id: v, customer_name: c?.name || '', customer_phone: c?.phone || ''});
+                }}
+                placeholder="Select Customer"
+              />
             ) : (
               <input className="form-input" placeholder="Customer name" value={form.customer_name} onChange={e => setForm({...form, customer_name: e.target.value})} />
             )}
@@ -416,21 +419,21 @@ function NewQuotation() {
                       />
                     </td>
                     <td>
-                      <input type="number" step="0.001" className="form-input"
+                      <NumberInput step="0.001"
                         value={li.weight || ''}
-                        onChange={e => updateLineItem(idx, 'weight', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
+                        onChange={v => updateLineItem(idx, 'weight', v)}
                         style={{ width: 100 }} />
                     </td>
                     <td>
-                      <input type="number" className="form-input"
+                      <NumberInput
                         value={li.rate || ''}
-                        onChange={e => updateLineItem(idx, 'rate', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
+                        onChange={v => updateLineItem(idx, 'rate', v)}
                         style={{ width: 110 }} />
                     </td>
                     <td>
-                      <input type="number" className="form-input"
+                      <NumberInput
                         value={li.making_charges || ''}
-                        onChange={e => updateLineItem(idx, 'making_charges', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
+                        onChange={v => updateLineItem(idx, 'making_charges', v)}
                         style={{ width: 110 }} />
                     </td>
                     <td className="fw-bold">{formatCurrency(li.amount)}</td>
@@ -480,13 +483,16 @@ function ItemSelector({ items, value, itemName, onSelect }) {
         {inputType === 'list' ? '📋' : '✏️'}
       </button>
       {inputType === 'list' ? (
-        <select className="form-input" value={value} onChange={e => {
-          const item = items.find(i => i.id === e.target.value);
-          onSelect(item?.id || '', item?.name || '');
-        }} style={{ width: 160 }}>
-          <option value="">Select</option>
-          {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.code})</option>)}
-        </select>
+        <Autocomplete
+          options={items.map(i => ({value: i.id, label: `${i.name} (${i.code})`}))}
+          value={value}
+          onChange={v => {
+            const item = items.find(i => i.id === v);
+            onSelect(item?.id || '', item?.name || '');
+          }}
+          placeholder="Select Item"
+          style={{ width: 160 }}
+        />
       ) : (
         <input className="form-input" value={itemName} onChange={e => onSelect('', e.target.value)}
           placeholder="Item name" style={{ width: 160 }} />

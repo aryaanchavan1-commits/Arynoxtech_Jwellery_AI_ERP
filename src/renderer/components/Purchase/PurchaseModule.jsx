@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import { VoucherHelper } from '../../utils/VoucherHelper';
 import Autocomplete, { PURITY_OPTIONS, METAL_OPTIONS } from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function PurchaseModule() {
   const { setPageTitle, formatCurrency, formatWeight, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -119,13 +120,13 @@ export default function PurchaseModule() {
                   <div className="form-row-4 mb-4">
                     <div className="form-group"><label className="form-label">Voucher No</label><input className="form-input" value={form.voucher_no} onChange={e => setForm({...form, voucher_no: e.target.value})} /></div>
                     <div className="form-group"><label className="form-label">Date</label><input type="date" className="form-input" value={form.date} onChange={e => setForm({...form, date: e.target.value})} /></div>
-                    <div className="form-group"><label className="form-label">Supplier</label><select className="form-input" value={form.party_id} onChange={e => setForm({...form, party_id: e.target.value})}><option value="">Select</option>{suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
+                    <div className="form-group"><label className="form-label">Supplier</label><Autocomplete options={suppliers.map(s => ({value: s.id, label: s.name}))} value={form.party_id} onChange={v => setForm({...form, party_id: v})} placeholder="Type to search supplier..." style={{ width: '100%' }} /></div>
                     <div className="form-group"><label className="form-label">Narration</label><input className="form-input" value={form.narration} onChange={e => setForm({...form, narration: e.target.value})} /></div>
                   </div>
                   <div className="flex-between mb-4"><strong>Items</strong><button className="btn btn-secondary btn-sm" onClick={addLineItem}>+ Add Item</button></div>
                   <div className="table-container mb-4">
                     <table><thead><tr><th>Item</th><th>Purity</th><th>Weight</th><th>Rate</th><th>Qty</th><th>Amount</th><th></th></tr></thead>
-                    <tbody>{lineItems.map(item => <tr key={item.id}><td><select className="form-input" value={item.item_id} onChange={e => updateLineItem(item.id, 'item_id', e.target.value)}><option value="">Select</option>{items.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}</select></td><td><Autocomplete options={PURITY_OPTIONS} value={item.purity} onChange={v => updateLineItem(item.id, 'purity', v)} style={{ width: 80 }} placeholder="Purity" /></td><td><input type="number" step="0.001" className="form-input" style={{ width: 80 }} value={item.weight || ''} onChange={e => { const v = e.target.value; updateLineItem(item.id, 'weight', v === '' ? '' : parseFloat(v) || 0); }} /></td><td><input type="number" className="form-input" style={{ width: 80 }} value={item.rate || ''} onChange={e => { const v = e.target.value; updateLineItem(item.id, 'rate', v === '' ? '' : parseFloat(v) || 0); }} /></td><td><input type="number" className="form-input" style={{ width: 60 }} value={item.qty || ''} onChange={e => { const v = e.target.value; updateLineItem(item.id, 'qty', v === '' ? '' : parseFloat(v) || 1); }} /></td><td className="fw-bold">{formatCurrency(item.amount)}</td><td><button className="btn btn-danger btn-xs" onClick={() => removeLineItem(item.id)}>✕</button></td></tr>)}</tbody></table>
+                    <tbody>{lineItems.map(item => <tr key={item.id}><td><Autocomplete options={items.map(i => ({value: i.id, label: i.name}))} value={item.item_id} onChange={v => updateLineItem(item.id, 'item_id', v)} placeholder="Type to search item..." style={{ width: 150 }} /></td><td><Autocomplete options={PURITY_OPTIONS} value={item.purity} onChange={v => updateLineItem(item.id, 'purity', v)} style={{ width: 80 }} placeholder="Purity" /></td><td><NumberInput value={item.weight} onChange={v => updateLineItem(item.id, 'weight', v)} style={{ width: 80 }} placeholder="Weight" /></td><td><NumberInput value={item.rate} onChange={v => updateLineItem(item.id, 'rate', v)} style={{ width: 80 }} placeholder="Rate" /></td><td><NumberInput value={item.qty} onChange={v => updateLineItem(item.id, 'qty', v === '' ? '' : v || 1)} style={{ width: 60 }} placeholder="Qty" /></td><td className="fw-bold">{formatCurrency(item.amount)}</td><td><button className="btn btn-danger btn-xs" onClick={() => removeLineItem(item.id)}>✕</button></td></tr>)}</tbody></table>
                   </div>
                   <div className="flex-end" style={{ display: 'flex', justifyContent: 'flex-end' }}>Total: <strong style={{ fontSize: 18, color: '#f59e0b' }}>{formatCurrency(form.total_amount)}</strong></div>
                 </div>
@@ -167,7 +168,7 @@ function MetalRatesSection() {
         <div className="form-row-4">
           <div className="form-group"><label className="form-label">Metal</label><Autocomplete options={METAL_OPTIONS} value={form.metal_type} onChange={v => setForm({...form, metal_type: v})} style={{ width: '100%' }} placeholder="Metal Type" creatable /></div>
           <div className="form-group"><label className="form-label">Purity</label><Autocomplete options={PURITY_OPTIONS} value={form.purity} onChange={v => setForm({...form, purity: v})} style={{ width: '100%' }} placeholder="Purity" creatable /></div>
-          <div className="form-group"><label className="form-label">Rate per Gram</label><input type="number" className="form-input" value={form.rate_per_gram || ''} onChange={e => { const v = e.target.value; setForm({...form, rate_per_gram: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
+          <div className="form-group"><label className="form-label">Rate per Gram</label><NumberInput value={form.rate_per_gram} onChange={v => setForm({...form, rate_per_gram: v})} style={{}} placeholder="Rate per Gram" /></div>
           <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end' }}><button className="btn btn-primary btn-block" onClick={submitRate}>Add Rate</button></div>
         </div>
       </div>

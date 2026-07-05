@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
+import Autocomplete from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function StockManagement() {
   const { setPageTitle, formatCurrency, formatWeight, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -147,10 +149,12 @@ export default function StockManagement() {
                     </div>
                     <div className="form-group">
                       <label className="form-label">Category</label>
-                      <select className="form-input" value={form.category_id} onChange={e => setForm({...form, category_id: e.target.value})}>
-                        <option value="">Select Category</option>
-                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                      </select>
+                    <Autocomplete
+                      options={categories.map(c => ({value: c.id, label: c.name}))}
+                      value={form.category_id}
+                      onChange={v => setForm({...form, category_id: v})}
+                      placeholder="Select Category"
+                    />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Metal Type</label>
@@ -166,27 +170,27 @@ export default function StockManagement() {
                     </div>
                     <div className="form-group">
                       <label className="form-label">Weight (g)</label>
-                      <input type="number" step="0.001" className="form-input" value={form.weight} onChange={e => setForm({...form, weight: parseFloat(e.target.value) || 0})} />
+                      <NumberInput step="0.001" value={form.weight} onChange={v => setForm({...form, weight: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Stone Weight (g)</label>
-                      <input type="number" step="0.001" className="form-input" value={form.stone_weight} onChange={e => setForm({...form, stone_weight: parseFloat(e.target.value) || 0})} />
+                      <NumberInput step="0.001" value={form.stone_weight} onChange={v => setForm({...form, stone_weight: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Making Charges</label>
-                      <input type="number" className="form-input" value={form.making_charges} onChange={e => setForm({...form, making_charges: parseFloat(e.target.value) || 0})} />
+                      <NumberInput value={form.making_charges} onChange={v => setForm({...form, making_charges: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Wastage %</label>
-                      <input type="number" step="0.1" className="form-input" value={form.wastage_percent} onChange={e => setForm({...form, wastage_percent: parseFloat(e.target.value) || 0})} />
+                      <NumberInput step="0.1" value={form.wastage_percent} onChange={v => setForm({...form, wastage_percent: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Cost Price</label>
-                      <input type="number" className="form-input" value={form.cost_price} onChange={e => setForm({...form, cost_price: parseFloat(e.target.value) || 0})} />
+                      <NumberInput value={form.cost_price} onChange={v => setForm({...form, cost_price: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Selling Price</label>
-                      <input type="number" className="form-input" value={form.selling_price} onChange={e => setForm({...form, selling_price: parseFloat(e.target.value) || 0})} />
+                      <NumberInput value={form.selling_price} onChange={v => setForm({...form, selling_price: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Tray No</label>
@@ -198,11 +202,11 @@ export default function StockManagement() {
                     </div>
                     <div className="form-group">
                       <label className="form-label">Current Qty</label>
-                      <input type="number" step="0.001" className="form-input" value={form.current_qty} onChange={e => setForm({...form, current_qty: parseFloat(e.target.value) || 0})} />
+                      <NumberInput step="0.001" value={form.current_qty} onChange={v => setForm({...form, current_qty: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Min Qty (Alert)</label>
-                      <input type="number" step="0.001" className="form-input" value={form.min_qty} onChange={e => setForm({...form, min_qty: parseFloat(e.target.value) || 0})} />
+                      <NumberInput step="0.001" value={form.min_qty} onChange={v => setForm({...form, min_qty: v})} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Barcode</label>

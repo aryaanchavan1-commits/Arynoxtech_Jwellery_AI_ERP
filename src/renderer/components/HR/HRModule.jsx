@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
+import Autocomplete, { EMPLOYEE_TYPE_OPTIONS } from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function HRModule() {
   const { setPageTitle, formatCurrency, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -41,10 +43,10 @@ export default function HRModule() {
               <div className="form-row">
                 <div className="form-group"><label className="form-label">Employee Code</label><input className="form-input" value={form.code} onChange={e => setForm({...form, code: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Name</label><input className="form-input" value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
-                <div className="form-group"><label className="form-label">Type</label><select className="form-input" value={form.type} onChange={e => setForm({...form, type: e.target.value})}><option>Staff</option><option>Salesman</option><option>Karagir</option><option>Admin</option><option>Manager</option></select></div>
+                <div className="form-group"><label className="form-label">Type</label><Autocomplete options={EMPLOYEE_TYPE_OPTIONS} value={form.type} onChange={v => setForm({...form, type: v})} placeholder="Select type" style={{ width: '100%' }} creatable /></div>
                 <div className="form-group"><label className="form-label">Phone</label><input className="form-input" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
-                <div className="form-group"><label className="form-label">Commission %</label><input type="number" step="0.1" className="form-input" value={form.commission_percent} onChange={e => setForm({...form, commission_percent: parseFloat(e.target.value) || 0})} /></div>
-                <div className="form-group"><label className="form-label">Monthly Salary</label><input type="number" className="form-input" value={form.salary} onChange={e => setForm({...form, salary: parseFloat(e.target.value) || 0})} /></div>
+                <div className="form-group"><label className="form-label">Commission %</label><NumberInput value={form.commission_percent} onChange={v => setForm({...form, commission_percent: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">Monthly Salary</label><NumberInput value={form.salary} onChange={v => setForm({...form, salary: v})} placeholder="0" /></div>
               </div>
               <div className="form-group"><label className="form-label">Email</label><input type="email" className="form-input" value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
             </div>

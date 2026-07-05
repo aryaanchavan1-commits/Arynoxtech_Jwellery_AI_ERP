@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
+import Autocomplete from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function StockModule() {
   const { setPageTitle, formatCurrency, formatWeight, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -82,10 +84,10 @@ function StockTransfer() {
     <div className="card">
       <div className="section-title">🔄 Stock Transfer (Tray to Tray)</div>
       <div className="form-row-4">
-        <div className="form-group"><label className="form-label">Item</label><select className="form-input" value={form.item_id} onChange={e => setForm({...form, item_id: e.target.value})}><option value="">Select</option>{items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.code})</option>)}</select></div>
+        <div className="form-group"><label className="form-label">Item</label><Autocomplete options={items.map(i => ({value: i.id, label: `${i.name} (${i.code})`}))} value={form.item_id} onChange={v => setForm({...form, item_id: v})} placeholder="Select" style={{ width: '100%' }} /></div>
         <div className="form-group"><label className="form-label">From Tray</label><input className="form-input" value={form.from_tray} onChange={e => setForm({...form, from_tray: e.target.value})} /></div>
         <div className="form-group"><label className="form-label">To Tray/Shelf</label><input className="form-input" value={form.to_tray} onChange={e => setForm({...form, to_tray: e.target.value})} /></div>
-        <div className="form-group"><label className="form-label">Quantity (g)</label><input type="number" step="0.001" className="form-input" value={form.qty} onChange={e => setForm({...form, qty: parseFloat(e.target.value) || 0})} /></div>
+        <div className="form-group"><label className="form-label">Quantity (g)</label><NumberInput value={form.qty} onChange={v => setForm({...form, qty: v})} placeholder="0" /></div>
       </div>
       <button className="btn btn-primary mt-2" onClick={transfer}>🔄 Transfer</button>
     </div>

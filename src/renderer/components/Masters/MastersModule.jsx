@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import { PrintService, DEFAULT_BARCODE_SETTINGS } from '../../utils/PrintService';
-import Autocomplete, { METAL_OPTIONS, PURITY_OPTIONS } from '../Common/Autocomplete';
+import Autocomplete, { METAL_OPTIONS, PURITY_OPTIONS, EMPLOYEE_TYPE_OPTIONS } from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function MastersModule() {
   const { setPageTitle } = useContext(AppContext);
@@ -167,18 +168,18 @@ function ItemsMaster() {
               </div>
               <div className="section-title">Metal & Weight</div>
               <div className="form-row-4">
-                <div className="form-group"><label className="form-label">Metal Type</label><Autocomplete options={METAL_OPTIONS} value={form.metal_type} onChange={v => setForm({...form, metal_type: v})} placeholder="Metal type" /></div>
-                <div className="form-group"><label className="form-label">Purity</label><Autocomplete options={PURITY_OPTIONS} value={form.purity} onChange={v => setForm({...form, purity: v})} placeholder="Purity" /></div>
-                <div className="form-group"><label className="form-label">Gross Weight (g)</label><input type="number" step="0.001" className="form-input" value={form.weight || ''} onChange={e => { const v = e.target.value; setForm({...form, weight: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-                <div className="form-group"><label className="form-label">Stone Weight (g)</label><input type="number" step="0.001" className="form-input" value={form.stone_weight || ''} onChange={e => { const v = e.target.value; setForm({...form, stone_weight: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
+                <div className="form-group"><label className="form-label">Metal Type</label><Autocomplete options={METAL_OPTIONS} value={form.metal_type} onChange={v => setForm({...form, metal_type: v})} placeholder="Type or select metal" creatable /></div>
+                <div className="form-group"><label className="form-label">Purity</label><Autocomplete options={PURITY_OPTIONS} value={form.purity} onChange={v => setForm({...form, purity: v})} placeholder="Type or select purity" creatable /></div>
+                <div className="form-group"><label className="form-label">Gross Weight (g)</label><NumberInput className="form-input" value={form.weight} onChange={v => setForm({...form, weight: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">Stone Weight (g)</label><NumberInput className="form-input" value={form.stone_weight} onChange={v => setForm({...form, stone_weight: v})} placeholder="0" /></div>
               </div>
               <div className="section-title">Pricing</div>
               <div className="form-row-4">
-                <div className="form-group"><label className="form-label">Cost Price (₹)</label><input type="number" className="form-input" value={form.cost_price || ''} onChange={e => { const v = e.target.value; setForm({...form, cost_price: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-                <div className="form-group"><label className="form-label">Selling Price (₹)</label><input type="number" className="form-input" value={form.selling_price || ''} onChange={e => { const v = e.target.value; setForm({...form, selling_price: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-                <div className="form-group"><label className="form-label">Making Charges (₹)</label><input type="number" className="form-input" value={form.making_charges || ''} onChange={e => { const v = e.target.value; setForm({...form, making_charges: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-                <div className="form-group"><label className="form-label">Wastage %</label><input type="number" step="0.1" className="form-input" value={form.wastage_percent || ''} onChange={e => { const v = e.target.value; setForm({...form, wastage_percent: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-                <div className="form-group"><label className="form-label">GST Rate %</label><input type="number" step="0.25" className="form-input" value={form.gst_rate || ''} onChange={e => { const v = e.target.value; setForm({...form, gst_rate: v === '' ? '' : parseFloat(v) || 0}); }} placeholder="3" /></div>
+                <div className="form-group"><label className="form-label">Cost Price (₹)</label><NumberInput className="form-input" value={form.cost_price} onChange={v => setForm({...form, cost_price: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">Selling Price (₹)</label><NumberInput className="form-input" value={form.selling_price} onChange={v => setForm({...form, selling_price: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">Making Charges (₹)</label><NumberInput className="form-input" value={form.making_charges} onChange={v => setForm({...form, making_charges: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">Wastage %</label><NumberInput className="form-input" value={form.wastage_percent} onChange={v => setForm({...form, wastage_percent: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">GST Rate %</label><NumberInput className="form-input" value={form.gst_rate} onChange={v => setForm({...form, gst_rate: v})} placeholder="3" /></div>
               </div>
               <div className="section-title">Location & Stock</div>
               <div className="form-row-4">
@@ -186,8 +187,8 @@ function ItemsMaster() {
                 <div className="form-group"><label className="form-label">Shelf No</label><input className="form-input" value={form.shelf_no} onChange={e => setForm({...form, shelf_no: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Location</label><input className="form-input" value={form.location} onChange={e => setForm({...form, location: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Barcode</label><input className="form-input" value={form.barcode} onChange={e => setForm({...form, barcode: e.target.value})} /></div>
-                <div className="form-group"><label className="form-label">Current Qty</label><input type="number" step="0.001" className="form-input" value={form.current_qty || ''} onChange={e => { const v = e.target.value; setForm({...form, current_qty: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-                <div className="form-group"><label className="form-label">Min Qty (Alert)</label><input type="number" step="0.001" className="form-input" value={form.min_qty || ''} onChange={e => { const v = e.target.value; setForm({...form, min_qty: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
+                <div className="form-group"><label className="form-label">Current Qty</label><NumberInput className="form-input" value={form.current_qty} onChange={v => setForm({...form, current_qty: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">Min Qty (Alert)</label><NumberInput className="form-input" value={form.min_qty} onChange={v => setForm({...form, min_qty: v})} placeholder="0" /></div>
               </div>
               <div className="form-group"><label className="form-label">Description</label><textarea className="form-input" rows={2} value={form.description} onChange={e => setForm({...form, description: e.target.value})} /></div>
             </div>
@@ -273,8 +274,8 @@ function CategoriesMaster() {
           <select className="form-input" value={type} onChange={e => setType(e.target.value)} style={{ width: 140 }}>
             <option>Ornament</option><option>Stone</option><option>Raw Material</option><option>Findings</option><option>Other</option>
           </select>
-          <input type="number" className="form-input" placeholder="Labour charge ₹" value={labourCharge} onChange={e => { const v = e.target.value; setLabourCharge(v === '' ? '' : parseFloat(v) || 0); }} style={{ width: 130 }} />
-          <input type="number" step="0.1" className="form-input" placeholder="Wastage %" value={wastagePct} onChange={e => { const v = e.target.value; setWastagePct(v === '' ? '' : parseFloat(v) || 0); }} style={{ width: 120 }} />
+          <NumberInput className="form-input" placeholder="Labour charge ₹" value={labourCharge} onChange={v => setLabourCharge(v)} style={{ width: 130 }} />
+          <NumberInput className="form-input" placeholder="Wastage %" value={wastagePct} onChange={v => setWastagePct(v)} style={{ width: 120 }} />
           <button className="btn btn-primary" onClick={addCat}>{editCatId ? 'Update' : 'Add'}</button>
           {editCatId && <button className="btn btn-secondary" onClick={() => { setName(''); setLabourCharge(''); setWastagePct(''); setEditCatId(null); }}>Cancel</button>}
         </div>
@@ -358,12 +359,12 @@ function PartiesMaster() {
               <div className="form-row-4">
                 <div className="form-group"><label className="form-label">Code *</label><input className="form-input" value={form.code} onChange={e => setForm({...form, code: e.target.value.toUpperCase()})} /></div>
                 <div className="form-group"><label className="form-label">Name *</label><input className="form-input" value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
-                <div className="form-group"><label className="form-label">Type</label><select className="form-input" value={form.type} onChange={e => setForm({...form, type: e.target.value})}><option>Customer</option><option>Supplier</option><option>Karagir</option><option>Refinery</option><option>Salesman</option><option>Both</option></select></div>
+                <div className="form-group"><label className="form-label">Type</label><Autocomplete options={[{value:'Customer',label:'Customer'},{value:'Supplier',label:'Supplier'},{value:'Karagir',label:'Karagir'},{value:'Refinery',label:'Refinery'},{value:'Salesman',label:'Salesman'},{value:'Both',label:'Both'}]} value={form.type} onChange={v => setForm({...form, type: v})} creatable placeholder="Party type" /></div>
                 <div className="form-group"><label className="form-label">GSTIN</label><input className="form-input" value={form.gstin} onChange={e => setForm({...form, gstin: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Phone</label><input className="form-input" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Email</label><input type="email" className="form-input" value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
-                <div className="form-group"><label className="form-label">Opening Balance</label><input type="number" className="form-input" value={form.opening_balance || ''} onChange={e => { const v = e.target.value; setForm({...form, opening_balance: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-                <div className="form-group"><label className="form-label">Credit Limit</label><input type="number" className="form-input" value={form.credit_limit || ''} onChange={e => { const v = e.target.value; setForm({...form, credit_limit: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
+                <div className="form-group"><label className="form-label">Opening Balance</label><NumberInput className="form-input" value={form.opening_balance} onChange={v => setForm({...form, opening_balance: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">Credit Limit</label><NumberInput className="form-input" value={form.credit_limit} onChange={v => setForm({...form, credit_limit: v})} placeholder="0" /></div>
               </div>
               <div className="form-group"><label className="form-label">Address</label><textarea className="form-input" rows={2} value={form.address} onChange={e => setForm({...form, address: e.target.value})} /></div>
             </div>
@@ -519,10 +520,10 @@ function EmployeeMaster() {
               <div className="form-row">
                 <div className="form-group"><label className="form-label">Code</label><input className="form-input" value={form.code} onChange={e => setForm({...form, code: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Name</label><input className="form-input" value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
-                <div className="form-group"><label className="form-label">Type</label><select className="form-input" value={form.type} onChange={e => setForm({...form, type: e.target.value})}><option>Staff</option><option>Salesman</option><option>Karagir</option><option>Admin</option></select></div>
+                <div className="form-group"><label className="form-label">Type</label><Autocomplete options={EMPLOYEE_TYPE_OPTIONS} value={form.type} onChange={v => setForm({...form, type: v})} creatable placeholder="Employee type" /></div>
                 <div className="form-group"><label className="form-label">Phone</label><input className="form-input" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
-                <div className="form-group"><label className="form-label">Commission %</label><input type="number" step="0.1" className="form-input" value={form.commission_percent || ''} onChange={e => { const v = e.target.value; setForm({...form, commission_percent: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-                <div className="form-group"><label className="form-label">Salary (₹)</label><input type="number" className="form-input" value={form.salary || ''} onChange={e => { const v = e.target.value; setForm({...form, salary: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
+                <div className="form-group"><label className="form-label">Commission %</label><NumberInput className="form-input" value={form.commission_percent} onChange={v => setForm({...form, commission_percent: v})} placeholder="0" /></div>
+                <div className="form-group"><label className="form-label">Salary (₹)</label><NumberInput className="form-input" value={form.salary} onChange={v => setForm({...form, salary: v})} placeholder="0" /></div>
               </div>
             </div>
             <div className="modal-footer"><button className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancel</button><button className="btn btn-primary" onClick={handleSubmit}>Save</button></div>

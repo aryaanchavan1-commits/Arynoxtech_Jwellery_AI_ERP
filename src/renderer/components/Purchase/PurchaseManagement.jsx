@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
+import Autocomplete from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function PurchaseManagement() {
   const { setPageTitle, formatCurrency, formatWeight, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -134,10 +136,12 @@ export default function PurchaseManagement() {
                     </div>
                     <div className="form-group">
                       <label className="form-label">Supplier</label>
-                      <select className="form-input" value={form.party_id} onChange={e => setForm({...form, party_id: e.target.value})}>
-                        <option value="">Select Supplier</option>
-                        {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                      </select>
+                    <Autocomplete
+                      options={suppliers.map(s => ({value: s.id, label: s.name}))}
+                      value={form.party_id}
+                      onChange={v => setForm({...form, party_id: v})}
+                      placeholder="Select Supplier"
+                    />
                     </div>
                   </div>
 
@@ -153,15 +157,18 @@ export default function PurchaseManagement() {
                         {lineItems.map(item => (
                           <tr key={item.id}>
                             <td>
-                              <select className="form-input" value={item.item_id} onChange={e => updateLineItem(item.id, 'item_id', e.target.value)}>
-                                <option value="">Select</option>
-                                {items.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
-                              </select>
+                            <Autocomplete
+                              options={items.map(i => ({value: i.id, label: i.name}))}
+                              value={item.item_id}
+                              onChange={v => updateLineItem(item.id, 'item_id', v)}
+                              placeholder="Select Item"
+                              style={{ minWidth: 160 }}
+                            />
                             </td>
                             <td><input className="form-input" style={{ width: 60 }} value={item.purity} onChange={e => updateLineItem(item.id, 'purity', e.target.value)} /></td>
-                            <td><input type="number" step="0.001" className="form-input" style={{ width: 80 }} value={item.weight} onChange={e => updateLineItem(item.id, 'weight', parseFloat(e.target.value) || 0)} /></td>
-                            <td><input type="number" className="form-input" style={{ width: 80 }} value={item.rate} onChange={e => updateLineItem(item.id, 'rate', parseFloat(e.target.value) || 0)} /></td>
-                            <td><input type="number" className="form-input" style={{ width: 60 }} value={item.qty} onChange={e => updateLineItem(item.id, 'qty', parseFloat(e.target.value) || 1)} /></td>
+                            <td><NumberInput step="0.001" style={{ width: 80 }} value={item.weight} onChange={v => updateLineItem(item.id, 'weight', v)} /></td>
+                            <td><NumberInput style={{ width: 80 }} value={item.rate} onChange={v => updateLineItem(item.id, 'rate', v)} /></td>
+                            <td><NumberInput style={{ width: 60 }} value={item.qty} onChange={v => updateLineItem(item.id, 'qty', v)} /></td>
                             <td>{formatCurrency(item.amount)}</td>
                             <td><button className="btn btn-danger btn-sm" onClick={() => removeLineItem(item.id)}>✕</button></td>
                           </tr>
@@ -240,7 +247,7 @@ function MetalRatesSection({ dbQuery, dbRun, addNotification, formatCurrency }) 
           </div>
           <div className="form-group">
             <label className="form-label">Rate per Gram (₹)</label>
-            <input type="number" className="form-input" value={form.rate_per_gram} onChange={e => setForm({...form, rate_per_gram: parseFloat(e.target.value) || 0})} />
+            <NumberInput value={form.rate_per_gram} onChange={v => setForm({...form, rate_per_gram: v})} />
           </div>
           <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
             <button className="btn btn-primary" onClick={submitRate}>Set Rate</button>

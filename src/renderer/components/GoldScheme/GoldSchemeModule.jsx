@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
+import Autocomplete from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function GoldSchemeModule() {
   const { setPageTitle, formatCurrency, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -66,14 +68,14 @@ export default function GoldSchemeModule() {
           <div className="modal modal-sm" onClick={e => e.stopPropagation()}>
             <div className="modal-header"><div className="modal-title">🏦 New Gold Saving Scheme</div><button className="title-btn close" onClick={() => setShowForm(false)}>✕</button></div>
             <div className="modal-body">
-              <div className="form-group"><label className="form-label">Customer</label><select className="form-input" value={form.customer_id} onChange={e => setForm({...form, customer_id: e.target.value})}><option value="">Select</option>{customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+              <div className="form-group"><label className="form-label">Customer</label><Autocomplete options={customers.map(c => ({value: c.id, label: c.name}))} value={form.customer_id} onChange={v => setForm({...form, customer_id: v})} placeholder="Search customer..." creatable={false} /></div>
               <div className="form-row">
                 <div className="form-group"><label className="form-label">Scheme</label><select className="form-input" value={form.scheme_name} onChange={e => setForm({...form, scheme_name: e.target.value})}><option>Gold Savings</option><option>Gold Plus</option><option>Diamond Scheme</option></select></div>
                 <div className="form-group"><label className="form-label">Start Date</label><input type="date" className="form-input" value={form.start_date} onChange={e => setForm({...form, start_date: e.target.value})} /></div>
               </div>
               <div className="form-row">
-                <div className="form-group"><label className="form-label">Monthly Amount (₹)</label><input type="number" className="form-input" value={form.monthly_amount} onChange={e => setForm({...form, monthly_amount: parseFloat(e.target.value) || 0})} /></div>
-                <div className="form-group"><label className="form-label">Duration (months)</label><input type="number" className="form-input" value={form.total_months} onChange={e => setForm({...form, total_months: parseInt(e.target.value) || 12})} /></div>
+                <div className="form-group"><label className="form-label">Monthly Amount (₹)</label><NumberInput value={form.monthly_amount} onChange={v => setForm({...form, monthly_amount: v === '' ? 0 : parseFloat(v) || 0})} /></div>
+                <div className="form-group"><label className="form-label">Duration (months)</label><NumberInput value={form.total_months} onChange={v => setForm({...form, total_months: v === '' ? 12 : parseInt(v) || 12})} /></div>
               </div>
               {form.monthly_amount > 0 && form.total_months > 0 && (
                 <div className="card mt-2" style={{ background: 'rgba(245,158,11,0.08)' }}>

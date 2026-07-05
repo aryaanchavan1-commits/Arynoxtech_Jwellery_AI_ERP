@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
+import Autocomplete from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function SalesManagement() {
   const { setPageTitle, formatCurrency, formatWeight, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -143,10 +145,12 @@ export default function SalesManagement() {
             </div>
             <div className="form-group">
               <label className="form-label">Customer</label>
-              <select className="form-input" value={invoice.party_id} onChange={e => setInvoice({...invoice, party_id: e.target.value})}>
-                <option value="">Select Customer</option>
-                {parties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
+              <Autocomplete
+                options={parties.map(p => ({value: p.id, label: p.name}))}
+                value={invoice.party_id}
+                onChange={v => setInvoice({...invoice, party_id: v})}
+                placeholder="Select Customer"
+              />
             </div>
             <div className="form-group">
               <label className="form-label">Payment Mode</label>
@@ -173,16 +177,19 @@ export default function SalesManagement() {
                 {lineItems.map(item => (
                   <tr key={item.id}>
                     <td>
-                      <select className="form-input" value={item.item_id} onChange={e => updateLineItem(item.id, 'item_id', e.target.value)}>
-                        <option value="">Select</option>
-                        {items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.code})</option>)}
-                      </select>
+                      <Autocomplete
+                        options={items.map(i => ({value: i.id, label: `${i.name} (${i.code})`}))}
+                        value={item.item_id}
+                        onChange={v => updateLineItem(item.id, 'item_id', v)}
+                        placeholder="Select Item"
+                        style={{ minWidth: 160 }}
+                      />
                     </td>
                     <td><input className="form-input" style={{ width: 60 }} value={item.purity} onChange={e => updateLineItem(item.id, 'purity', e.target.value)} /></td>
-                    <td><input type="number" step="0.001" className="form-input" style={{ width: 80 }} value={item.weight} onChange={e => updateLineItem(item.id, 'weight', parseFloat(e.target.value) || 0)} /></td>
-                    <td><input type="number" className="form-input" style={{ width: 80 }} value={item.rate} onChange={e => updateLineItem(item.id, 'rate', parseFloat(e.target.value) || 0)} /></td>
-                    <td><input type="number" className="form-input" style={{ width: 70 }} value={item.making_charges} onChange={e => updateLineItem(item.id, 'making_charges', parseFloat(e.target.value) || 0)} /></td>
-                    <td><input type="number" className="form-input" style={{ width: 70 }} value={item.discount} onChange={e => updateLineItem(item.id, 'discount', parseFloat(e.target.value) || 0)} /></td>
+                    <td><NumberInput step="0.001" style={{ width: 80 }} value={item.weight} onChange={v => updateLineItem(item.id, 'weight', v)} /></td>
+                    <td><NumberInput style={{ width: 80 }} value={item.rate} onChange={v => updateLineItem(item.id, 'rate', v)} /></td>
+                    <td><NumberInput style={{ width: 70 }} value={item.making_charges} onChange={v => updateLineItem(item.id, 'making_charges', v)} /></td>
+                    <td><NumberInput style={{ width: 70 }} value={item.discount} onChange={v => updateLineItem(item.id, 'discount', v)} /></td>
                     <td>{formatCurrency(item.amount)}</td>
                     <td><button className="btn btn-danger btn-sm" onClick={() => removeLineItem(item.id)}>✕</button></td>
                   </tr>
@@ -330,10 +337,12 @@ function KaragirSection({ dbQuery, dbRun, addNotification, formatCurrency, forma
         <div className="grid-4">
           <div className="form-group">
             <label className="form-label">Karagir</label>
-            <select className="form-input" value={form.karagir_id} onChange={e => setForm({...form, karagir_id: e.target.value})}>
-              <option value="">Select Karagir</option>
-              {karagirs.map(k => <option key={k.id} value={k.id}>{k.name}</option>)}
-            </select>
+            <Autocomplete
+              options={karagirs.map(k => ({value: k.id, label: k.name}))}
+              value={form.karagir_id}
+              onChange={v => setForm({...form, karagir_id: v})}
+              placeholder="Select Karagir"
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Type</label>
@@ -343,19 +352,19 @@ function KaragirSection({ dbQuery, dbRun, addNotification, formatCurrency, forma
           </div>
           <div className="form-group">
             <label className="form-label">Gold Given (g)</label>
-            <input type="number" step="0.001" className="form-input" value={form.gold_given} onChange={e => setForm({...form, gold_given: parseFloat(e.target.value) || 0})} />
+            <NumberInput step="0.001" value={form.gold_given} onChange={v => setForm({...form, gold_given: v})} />
           </div>
           <div className="form-group">
             <label className="form-label">Gold Received (g)</label>
-            <input type="number" step="0.001" className="form-input" value={form.gold_received} onChange={e => setForm({...form, gold_received: parseFloat(e.target.value) || 0})} />
+            <NumberInput step="0.001" value={form.gold_received} onChange={v => setForm({...form, gold_received: v})} />
           </div>
           <div className="form-group">
             <label className="form-label">Making Charges</label>
-            <input type="number" className="form-input" value={form.making_charges} onChange={e => setForm({...form, making_charges: parseFloat(e.target.value) || 0})} />
+            <NumberInput value={form.making_charges} onChange={v => setForm({...form, making_charges: v})} />
           </div>
           <div className="form-group">
             <label className="form-label">Amount</label>
-            <input type="number" className="form-input" value={form.amount} onChange={e => setForm({...form, amount: parseFloat(e.target.value) || 0})} />
+            <NumberInput value={form.amount} onChange={v => setForm({...form, amount: v})} />
           </div>
           <div className="form-group">
             <label className="form-label">Due Date</label>

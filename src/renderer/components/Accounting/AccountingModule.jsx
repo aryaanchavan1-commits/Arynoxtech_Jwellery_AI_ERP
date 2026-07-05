@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
+import Autocomplete from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 import FiscalYearClose from './FiscalYearClose';
 
 export default function AccountingModule() {
@@ -109,9 +111,9 @@ function VoucherSection() {
               <div className="table-container mb-4">
                 <table><thead><tr><th>Ledger</th><th>Debit</th><th>Credit</th><th>Narration</th><th></th></tr></thead>
                 <tbody>{entries.map(e => <tr key={e.id}>
-                  <td><select className="form-input" value={e.ledger_id} onChange={ev => updateEntry(e.id, 'ledger_id', ev.target.value)}><option value="">Select Ledger</option>{ledgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></td>
-                  <td><input type="number" className="form-input" style={{ width: 110 }} value={e.debit} onChange={ev => updateEntry(e.id, 'debit', parseFloat(ev.target.value) || 0)} /></td>
-                  <td><input type="number" className="form-input" style={{ width: 110 }} value={e.credit} onChange={ev => updateEntry(e.id, 'credit', parseFloat(ev.target.value) || 0)} /></td>
+                  <td><Autocomplete options={ledgers.map(l => ({value: l.id, label: l.name}))} value={e.ledger_id} onChange={v => updateEntry(e.id, 'ledger_id', v)} placeholder="Select Ledger..." creatable={false} style={{ minWidth: 160 }} /></td>
+                  <td><NumberInput style={{ width: 110 }} value={e.debit} onChange={v => updateEntry(e.id, 'debit', v === '' ? 0 : parseFloat(v) || 0)} /></td>
+                  <td><NumberInput style={{ width: 110 }} value={e.credit} onChange={v => updateEntry(e.id, 'credit', v === '' ? 0 : parseFloat(v) || 0)} /></td>
                   <td><input className="form-input" value={e.narration} onChange={ev => updateEntry(e.id, 'narration', ev.target.value)} /></td>
                   <td><button className="btn btn-danger btn-xs" onClick={() => removeEntry(e.id)}>✕</button></td>
                 </tr>)}</tbody></table>
@@ -161,7 +163,7 @@ function LedgerSection() {
             <div className="form-group"><label className="form-label">Ledger Name</label><input className="form-input" value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
             <div className="form-group"><label className="form-label">Code</label><input className="form-input" value={form.code} onChange={e => setForm({...form, code: e.target.value})} /></div>
             <div className="form-group"><label className="form-label">Group</label><select className="form-input" value={form.group_name} onChange={e => setForm({...form, group_name: e.target.value})}>{groups.map(g => <option key={g} value={g}>{g}</option>)}</select></div>
-            <div className="form-group"><label className="form-label">Opening Balance</label><input type="number" className="form-input" value={form.opening_balance} onChange={e => setForm({...form, opening_balance: parseFloat(e.target.value) || 0})} /></div>
+            <div className="form-group"><label className="form-label">Opening Balance</label><NumberInput value={form.opening_balance} onChange={v => setForm({...form, opening_balance: v === '' ? 0 : parseFloat(v) || 0})} /></div>
           </div>
           <button className="btn btn-primary mt-2" onClick={addLedger}>Save Ledger</button>
         </div>

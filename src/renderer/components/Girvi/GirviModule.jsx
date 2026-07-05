@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import { AuthContext } from '../../contexts/AuthContext';
 import Autocomplete, { PURITY_OPTIONS } from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 const HINDI_MONTHS = ['Chaitra', 'Vaishakh', 'Jyeshtha', 'Ashadh', 'Shravan', 'Bhadrapada', 'Ashwin', 'Kartik', 'Margashirsha', 'Pausha', 'Magha', 'Phalguna'];
 const TABS = [
@@ -203,9 +204,7 @@ function NewPledgeSection() {
       <div className="form-row-4">
         <div className="form-group"><label className="form-label">Pledge No</label><input type="text" className="form-input" value={form.pledge_no || ''} disabled style={{ opacity: 0.7 }} /></div>
         <div className="form-group"><label className="form-label">Customer <span className="text-red">*</span></label>
-          <select className="form-input" value={form.customer_id} onChange={e => setForm(f => ({ ...f, customer_id: e.target.value }))}>
-            <option value="">Select Customer</option>{customers.map(c => <option key={c.id} value={c.id}>{c.name} ({c.phone || '-'})</option>)}
-          </select>
+          <Autocomplete options={customers.map(c => ({value: c.id, label: c.name + ' (' + (c.phone||'-') + ')'}))} value={form.customer_id} onChange={v => setForm(f => ({...f, customer_id: v}))} placeholder="Search customer..." creatable={false} />
         </div>
         <div className="form-group"><label className="form-label">Date</label><input type="date" className="form-input" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} /></div>
         <div className="form-group"><label className="form-label">Maturity Date</label><input type="date" className="form-input" value={form.maturity_date} onChange={e => setForm(f => ({ ...f, maturity_date: e.target.value, _manualMaturity: true }))} /></div>
@@ -213,19 +212,19 @@ function NewPledgeSection() {
 
       <div className="form-row-4">
         <div className="form-group"><label className="form-label">Item Description</label><textarea className="form-input" rows={2} value={form.item_description} onChange={e => setForm(f => ({ ...f, item_description: e.target.value }))} /></div>
-        <div className="form-group"><label className="form-label">Weight (g) <span className="text-red">*</span></label><input type="number" step="0.01" className="form-input" value={form.weight || ''} onChange={handleNumber('weight')} /></div>
+        <div className="form-group"><label className="form-label">Weight (g) <span className="text-red">*</span></label><NumberInput step="0.01" value={form.weight || ''} onChange={v => setForm(f => ({...f, weight: v === '' ? '' : parseFloat(v) || 0}))} /></div>
         <div className="form-group"><label className="form-label">Purity</label><Autocomplete options={PURITY_OPTIONS} value={form.purity} onChange={v => setForm(f => ({ ...f, purity: v }))} style={{ width: '100%' }} placeholder="Purity" creatable /></div>
         <div className="form-group"><label className="form-label">HUIDs (comma separated)</label><input type="text" className="form-input" value={form.huids} onChange={e => setForm(f => ({ ...f, huids: e.target.value }))} placeholder="e.g. HUID001, HUID002" /></div>
       </div>
 
       <div className="form-row-4">
-        <div className="form-group"><label className="form-label">Valuation per Gram (₹) <span className="text-red">*</span></label><input type="number" step="0.01" className="form-input" value={form.valuation_per_gram || ''} onChange={handleNumber('valuation_per_gram')} /></div>
+        <div className="form-group"><label className="form-label">Valuation per Gram (₹) <span className="text-red">*</span></label><NumberInput step="0.01" value={form.valuation_per_gram || ''} onChange={v => setForm(f => ({...f, valuation_per_gram: v === '' ? '' : parseFloat(v) || 0}))} /></div>
         <div className="form-group"><label className="form-label">Total Valuation</label><input type="text" className="form-input" value={form.total_valuation ? `₹ ${form.total_valuation.toFixed(2)}` : '₹ 0.00'} disabled style={{ opacity: 0.7 }} /></div>
         <div className="form-group"><label className="form-label">Loan Amount (₹) <span className="text-red">*</span></label>
-          <input type="number" step="0.01" className="form-input" value={form.loan_amount || ''} onChange={handleNumber('loan_amount')} />
+          <NumberInput step="0.01" value={form.loan_amount || ''} onChange={v => setForm(f => ({...f, loan_amount: v === '' ? '' : parseFloat(v) || 0}))} />
           {parseFloat(form.loan_amount) > form.total_valuation && form.total_valuation > 0 && <div className="error-msg">Loan exceeds valuation</div>}
         </div>
-        <div className="form-group"><label className="form-label">Interest Rate (% p.a.) <span className="text-red">*</span></label><input type="number" step="0.1" className="form-input" value={form.interest_rate || ''} onChange={handleNumber('interest_rate')} /></div>
+        <div className="form-group"><label className="form-label">Interest Rate (% p.a.) <span className="text-red">*</span></label><NumberInput step="0.1" value={form.interest_rate || ''} onChange={v => setForm(f => ({...f, interest_rate: v === '' ? '' : parseFloat(v) || 0}))} /></div>
       </div>
 
       <div className="form-row-3">
@@ -327,9 +326,7 @@ function InterestCalculatorSection() {
         <div className="section-title">Interest Calculator</div>
         <div className="form-row-3">
           <div className="form-group"><label className="form-label">Select Pledge</label>
-            <select className="form-input" value={selectedId} onChange={handlePledgeChange}>
-              <option value="">Select an active pledge</option>{pledges.map(p => <option key={p.id} value={p.id}>{p.pledge_no} - {p.customer_name}</option>)}
-            </select>
+            <Autocomplete options={pledges.map(p => ({value: p.id, label: p.pledge_no + ' - ' + p.customer_name}))} value={selectedId} onChange={v => { setSelectedId(v); loadPledge(v); }} placeholder="Select an active pledge..." creatable={false} />
           </div>
         </div>
       </div>
@@ -459,9 +456,7 @@ function ReceiptsSection() {
         <div className="section-title">Receipts & History</div>
         <div className="form-row-3">
           <div className="form-group"><label className="form-label">Select Pledge</label>
-            <select className="form-input" value={selectedId} onChange={handleSelect}>
-              <option value="">Select a pledge</option>{pledges.map(p => <option key={p.id} value={p.id}>{p.pledge_no} - {p.customer_name} ({p.status})</option>)}
-            </select>
+            <Autocomplete options={pledges.map(p => ({value: p.id, label: p.pledge_no + ' - ' + p.customer_name + ' (' + p.status + ')'}))} value={selectedId} onChange={v => { setSelectedId(v); loadPledgeData(v); }} placeholder="Select a pledge..." creatable={false} />
           </div>
         </div>
       </div>
@@ -493,7 +488,7 @@ function ReceiptsSection() {
             <div className="card mb-4">
               <div className="section-title">New Receipt</div>
               <div className="form-row-3">
-                <div className="form-group"><label className="form-label">Amount (₹)</label><input type="number" step="0.01" className="form-input" value={form.amount || ''} onChange={e => { const v = e.target.value; setForm(f => ({ ...f, amount: v === '' ? '' : parseFloat(v) || 0 })); }} /></div>
+                <div className="form-group"><label className="form-label">Amount (₹)</label><NumberInput step="0.01" value={form.amount || ''} onChange={v => setForm(f => ({ ...f, amount: v === '' ? '' : parseFloat(v) || 0 }))} /></div>
                 <div className="form-group"><label className="form-label">Type</label>
                   <select className="form-input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
                     <option value="loan_interest">Loan Interest</option>

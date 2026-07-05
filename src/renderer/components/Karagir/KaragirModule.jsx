@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import Autocomplete, { PURITY_OPTIONS } from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function KaragirModule() {
   const { setPageTitle, formatCurrency, formatWeight, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -58,13 +59,13 @@ function NaveSection() {
       <div className="card mb-4">
         <div className="section-title">📤 Issue Gold to Karagir (Nave)</div>
         <div className="form-row-4">
-          <div className="form-group"><label className="form-label">Karagir</label><select className="form-input" value={form.karagir_id} onChange={e => setForm({...form, karagir_id: e.target.value})}><option value="">Select Karagir</option>{karagirs.map(k => <option key={k.id} value={k.id}>{k.name}</option>)}</select></div>
+          <div className="form-group"><label className="form-label">Karagir</label><Autocomplete options={karagirs.map(k => ({value: k.id, label: k.name}))} value={form.karagir_id} onChange={v => setForm({...form, karagir_id: v})} placeholder="Select Karagir" style={{ width: '100%' }} /></div>
           <div className="form-group"><label className="form-label">Date</label><input type="date" className="form-input" value={form.date} onChange={e => setForm({...form, date: e.target.value})} /></div>
-          <div className="form-group"><label className="form-label">Gold Given (g)</label><input type="number" step="0.001" className="form-input" value={form.gold_given || ''} onChange={e => { const v = e.target.value; setForm({...form, gold_given: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
+          <div className="form-group"><label className="form-label">Gold Given (g)</label><NumberInput value={form.gold_given || ''} onChange={v => setForm({...form, gold_given: v})} placeholder="0" /></div>
           <div className="form-group"><label className="form-label">Purity</label><Autocomplete options={PURITY_OPTIONS} value={form.purity} onChange={v => setForm({...form, purity: v})} style={{ width: '100%' }} placeholder="Purity" creatable /></div>
-          <div className="form-group"><label className="form-label">Stone Given (g)</label><input type="number" step="0.001" className="form-input" value={form.stone_weight || ''} onChange={e => { const v = e.target.value; setForm({...form, stone_weight: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-          <div className="form-group"><label className="form-label">Expected Weight (g)</label><input type="number" step="0.001" className="form-input" value={form.expected_weight || ''} onChange={e => { const v = e.target.value; setForm({...form, expected_weight: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-          <div className="form-group"><label className="form-label">Making Charges (₹)</label><input type="number" className="form-input" value={form.making_charges || ''} onChange={e => { const v = e.target.value; setForm({...form, making_charges: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
+          <div className="form-group"><label className="form-label">Stone Given (g)</label><NumberInput value={form.stone_weight || ''} onChange={v => setForm({...form, stone_weight: v})} placeholder="0" /></div>
+          <div className="form-group"><label className="form-label">Expected Weight (g)</label><NumberInput value={form.expected_weight || ''} onChange={v => setForm({...form, expected_weight: v})} placeholder="0" /></div>
+          <div className="form-group"><label className="form-label">Making Charges (₹)</label><NumberInput value={form.making_charges || ''} onChange={v => setForm({...form, making_charges: v})} placeholder="0" /></div>
           <div className="form-group"><label className="form-label">Due Date</label><input type="date" className="form-input" value={form.due_date} onChange={e => setForm({...form, due_date: e.target.value})} /></div>
         </div>
         <button className="btn btn-primary mt-2" onClick={submitNave}>📤 Issue Nave</button>
@@ -110,12 +111,12 @@ function JamaSection() {
     <div className="card">
       <div className="section-title">📥 Receive from Karagir (Jama)</div>
       <div className="form-row-4">
-        <div className="form-group"><label className="form-label">Karagir</label><select className="form-input" value={form.karagir_id} onChange={e => { setForm({...form, karagir_id: e.target.value}); loadNaveItems(e.target.value); }}><option value="">Select</option>{karagirs.map(k => <option key={k.id} value={k.id}>{k.name}</option>)}</select></div>
-        <div className="form-group"><label className="form-label">Reference Nave</label><select className="form-input" value={form.nave_id} onChange={e => setForm({...form, nave_id: e.target.value})}><option value="">Direct Receipt</option>{naveItems.map(n => <option key={n.id} value={n.id}>{n.id?.slice(0, 8)} (Given: {formatWeight(n.gold_given_weight)})</option>)}</select></div>
-        <div className="form-group"><label className="form-label">Gold Received (g)</label><input type="number" step="0.001" className="form-input" value={form.gold_received || ''} onChange={e => { const v = e.target.value; setForm({...form, gold_received: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-        <div className="form-group"><label className="form-label">Wastage (g)</label><input type="number" step="0.001" className="form-input" value={form.wastage || ''} onChange={e => { const v = e.target.value; setForm({...form, wastage: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-        <div className="form-group"><label className="form-label">Making Charges (₹)</label><input type="number" className="form-input" value={form.making_charges || ''} onChange={e => { const v = e.target.value; setForm({...form, making_charges: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
-        <div className="form-group"><label className="form-label">Amount (₹)</label><input type="number" className="form-input" value={form.amount || ''} onChange={e => { const v = e.target.value; setForm({...form, amount: v === '' ? '' : parseFloat(v) || 0}); }} /></div>
+        <div className="form-group"><label className="form-label">Karagir</label><Autocomplete options={karagirs.map(k => ({value: k.id, label: k.name}))} value={form.karagir_id} onChange={v => { setForm({...form, karagir_id: v}); loadNaveItems(v); }} placeholder="Select" style={{ width: '100%' }} /></div>
+        <div className="form-group"><label className="form-label">Reference Nave</label><Autocomplete options={naveItems.map(n => ({value: n.id, label: `${n.id?.slice(0, 8)} (Given: ${formatWeight(n.gold_given_weight)})`}))} value={form.nave_id} onChange={v => setForm({...form, nave_id: v})} placeholder="Direct Receipt" style={{ width: '100%' }} /></div>
+        <div className="form-group"><label className="form-label">Gold Received (g)</label><NumberInput value={form.gold_received || ''} onChange={v => setForm({...form, gold_received: v})} placeholder="0" /></div>
+        <div className="form-group"><label className="form-label">Wastage (g)</label><NumberInput value={form.wastage || ''} onChange={v => setForm({...form, wastage: v})} placeholder="0" /></div>
+        <div className="form-group"><label className="form-label">Making Charges (₹)</label><NumberInput value={form.making_charges || ''} onChange={v => setForm({...form, making_charges: v})} placeholder="0" /></div>
+        <div className="form-group"><label className="form-label">Amount (₹)</label><NumberInput value={form.amount || ''} onChange={v => setForm({...form, amount: v})} placeholder="0" /></div>
       </div>
       <button className="btn btn-success mt-2" onClick={submitJama}>📥 Receive Jama</button>
     </div>

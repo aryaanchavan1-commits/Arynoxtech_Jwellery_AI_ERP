@@ -3,6 +3,7 @@ import { AppContext } from '../../contexts/AppContext';
 import { PrintService } from '../../utils/PrintService';
 import { VoucherHelper } from '../../utils/VoucherHelper';
 import Autocomplete, { PURITY_OPTIONS, PAYMENT_OPTIONS } from '../Common/Autocomplete';
+import NumberInput from '../../utils/NumberInput';
 
 export default function SalesModule() {
   const { setPageTitle, formatCurrency, formatWeight, dbQuery, dbRun, addNotification } = useContext(AppContext);
@@ -92,7 +93,7 @@ function RetailSale() {
       const newItem = { ...item, [field]: value };
       if (field === 'item_id') {
         const sel = items.find(i => i.id === value);
-        if (sel) { newItem.rate = sel.selling_price || goldRate; newItem.purity = sel.purity; newItem.weight = sel.weight || ''; newItem.stone_weight = sel.stone_weight || 0; newItem.making_charges = sel.making_charges || ''; }
+        if (sel) { newItem.rate = sel.selling_price || goldRate; newItem.purity = sel.purity; newItem.weight = sel.weight ?? ''; newItem.stone_weight = sel.stone_weight ?? 0; newItem.making_charges = sel.making_charges ?? ''; }
       }
       newItem.amount = (parseFloat(newItem.qty) || 1) * (parseFloat(newItem.rate) || 0) + (parseFloat(newItem.making_charges) || 0) + (parseFloat(newItem.wastage_charges) || 0) - (parseFloat(newItem.discount) || 0);
       const gstRate = parseFloat(newItem.gst_rate) || 3;
@@ -268,9 +269,7 @@ function RetailSale() {
                 <div className="form-group"><label className="form-label">Voucher No</label><input className="form-input" value={invoice.voucher_no} onChange={e => setInvoice({...invoice, voucher_no: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Date</label><input type="date" className="form-input" value={invoice.date} onChange={e => setInvoice({...invoice, date: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Customer</label>
-                  <select className="form-input" value={invoice.party_id} onChange={e => { const p = parties.find(x => x.id === e.target.value); setInvoice({...invoice, party_id: e.target.value}); setIsGst(!!p?.gstin); }}>
-                    <option value="">Walk-in Customer</option>{parties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                  </select>
+                  <Autocomplete options={parties.map(p => ({value: p.id, label: p.name}))} value={invoice.party_id} onChange={v => { const p = parties.find(x => x.id === v); setInvoice({...invoice, party_id: v}); setIsGst(!!p?.gstin); }} placeholder="Walk-in Customer" creatable={false} />
                 </div>
                 <div className="form-group"><label className="form-label">Payment Mode</label>
                   <Autocomplete options={PAYMENT_OPTIONS} value={invoice.payment_mode} onChange={v => setInvoice({...invoice, payment_mode: v})} placeholder="Payment mode" />
@@ -283,12 +282,12 @@ function RetailSale() {
                   <tbody>
                     {lineItems.map(item => (
                       <tr key={item.id}>
-                        <td><select className="form-input" value={item.item_id} onChange={e => updateLineItem(item.id, 'item_id', e.target.value)}><option value="">Select</option>{items.map(i => <option key={i.id} value={i.id}>{i.name} ({i.code})</option>)}</select></td>
+                        <td><Autocomplete options={items.map(i => ({value: i.id, label: `${i.name} (${i.code})`}))} value={item.item_id} onChange={v => updateLineItem(item.id, 'item_id', v)} placeholder="Select item" creatable={false} /></td>
                         <td><Autocomplete options={PURITY_OPTIONS} value={item.purity} onChange={v => updateLineItem(item.id, 'purity', v)} style={{ width: 80 }} placeholder="Purity" /></td>
-                        <td><input type="number" step="0.001" className="form-input" style={{ width: 80 }} value={item.weight || ''} onChange={e => { const v = e.target.value; updateLineItem(item.id, 'weight', v === '' ? '' : parseFloat(v) || 0); }} /></td>
-                        <td><input type="number" className="form-input" style={{ width: 80 }} value={item.rate || ''} onChange={e => { const v = e.target.value; updateLineItem(item.id, 'rate', v === '' ? '' : parseFloat(v) || 0); }} /></td>
-                        <td><input type="number" className="form-input" style={{ width: 70 }} value={item.making_charges || ''} onChange={e => { const v = e.target.value; updateLineItem(item.id, 'making_charges', v === '' ? '' : parseFloat(v) || 0); }} /></td>
-                        <td><input type="number" className="form-input" style={{ width: 70 }} value={item.discount || ''} onChange={e => { const v = e.target.value; updateLineItem(item.id, 'discount', v === '' ? '' : parseFloat(v) || 0); }} /></td>
+                        <td><NumberInput value={item.weight} onChange={v => updateLineItem(item.id, 'weight', v)} style={{ width: 80 }} step="0.001" /></td>
+                        <td><NumberInput value={item.rate} onChange={v => updateLineItem(item.id, 'rate', v)} style={{ width: 80 }} /></td>
+                        <td><NumberInput value={item.making_charges} onChange={v => updateLineItem(item.id, 'making_charges', v)} style={{ width: 70 }} /></td>
+                        <td><NumberInput value={item.discount} onChange={v => updateLineItem(item.id, 'discount', v)} style={{ width: 70 }} /></td>
                         <td className="fw-bold text-gold">{formatCurrency(item.amount)}</td>
                         <td>{formatCurrency(item.cgst || 0)}</td>
                         <td>{formatCurrency(item.sgst || 0)}</td>
@@ -441,7 +440,7 @@ function WholesaleSale() {
               <div className="form-row-4 mb-4">
                 <div className="form-group"><label className="form-label">Invoice No</label><input className="form-input" value={invoice.voucher_no} onChange={e => setInvoice({...invoice, voucher_no: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Date</label><input type="date" className="form-input" value={invoice.date} onChange={e => setInvoice({...invoice, date: e.target.value})} /></div>
-                <div className="form-group"><label className="form-label">Customer</label><select className="form-input" value={invoice.party_id} onChange={e => setInvoice({...invoice, party_id: e.target.value})}><option value="">Select</option>{parties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
+                <div className="form-group"><label className="form-label">Customer</label><Autocomplete options={parties.map(p => ({value: p.id, label: p.name}))} value={invoice.party_id} onChange={v => setInvoice({...invoice, party_id: v})} placeholder="Select customer" creatable={false} /></div>
                 <div className="form-group"><label className="form-label">Payment</label><Autocomplete options={PAYMENT_OPTIONS} value={invoice.payment_mode} onChange={v => setInvoice({...invoice, payment_mode: v})} placeholder="Payment mode" creatable /></div>
               </div>
               <div className="flex-between mb-4"><strong>Items</strong><button className="btn btn-secondary btn-sm" onClick={() => setLineItems([...lineItems, { id: crypto.randomUUID(), item_id: '', qty: 1, weight: '', purity: '24K', rate: goldRate * 0.95, making_charges: '', discount: '', amount: '' }])}>+ Add</button></div>
@@ -454,12 +453,12 @@ function WholesaleSale() {
                     setInvoice(prev => ({ ...prev, total_amount: updated.reduce((s, i) => s + (i.amount || 0), 0), gold_weight: updated.reduce((s, i) => s + (i.weight || 0), 0) }));
                   };
                   return <tr key={item.id}>
-                    <td><select className="form-input" value={item.item_id} onChange={e => { const s = items.find(x => x.id === e.target.value); upd('item_id', e.target.value); if (s) { upd('rate', s.selling_price * 0.95 || goldRate * 0.95); upd('purity', s.purity); upd('weight', s.weight || ''); }}}><option value="">Select</option>{items.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}</select></td>
+                    <td><select className="form-input" value={item.item_id} onChange={e => { const s = items.find(x => x.id === e.target.value); upd('item_id', e.target.value); if (s) { upd('rate', s.selling_price * 0.95 || goldRate * 0.95); upd('purity', s.purity); upd('weight', s.weight ?? ''); }}}><option value="">Select</option>{items.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}</select></td>
                     <td><Autocomplete options={PURITY_OPTIONS} value={item.purity} onChange={v => upd('purity', v)} style={{ width: 80 }} placeholder="Purity" creatable /></td>
-                    <td><input type="number" step="0.001" className="form-input" style={{ width: 70 }} value={item.weight || ''} onChange={e => { const v = e.target.value; upd('weight', v === '' ? '' : parseFloat(v) || 0); }} /></td>
-                    <td><input type="number" className="form-input" style={{ width: 50 }} value={item.qty || ''} onChange={e => { const v = e.target.value; upd('qty', v === '' ? '' : parseFloat(v) || 1); }} /></td>
-                    <td><input type="number" className="form-input" style={{ width: 75 }} value={item.rate || ''} onChange={e => { const v = e.target.value; upd('rate', v === '' ? '' : parseFloat(v) || 0); }} /></td>
-                    <td><input type="number" className="form-input" style={{ width: 65 }} value={item.discount || ''} onChange={e => { const v = e.target.value; upd('discount', v === '' ? '' : parseFloat(v) || 0); }} /></td>
+                    <td><NumberInput value={item.weight} onChange={v => upd('weight', v)} style={{ width: 70 }} step="0.001" /></td>
+                    <td><NumberInput value={item.qty} onChange={v => upd('qty', v)} style={{ width: 50 }} /></td>
+                    <td><NumberInput value={item.rate} onChange={v => upd('rate', v)} style={{ width: 75 }} /></td>
+                    <td><NumberInput value={item.discount} onChange={v => upd('discount', v)} style={{ width: 65 }} /></td>
                     <td className="fw-bold text-gold">{formatCurrency(item.amount)}</td>
                     <td><button className="btn btn-danger btn-xs" onClick={() => { const updated = lineItems.filter(i => i.id !== item.id); setLineItems(updated); setInvoice(prev => ({ ...prev, total_amount: updated.reduce((s, i) => s + (i.amount || 0), 0), gold_weight: updated.reduce((s, i) => s + (i.weight || 0), 0) })); }}>✕</button></td>
                   </tr>;
